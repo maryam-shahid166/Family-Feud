@@ -6,25 +6,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 
-public class FamilyFeud 
-{
+public class FamilyFeud {
     private JFrame frame;
-    private JPanel panel;
     private Font customFont;
 
-    public FamilyFeud() 
-    {
-        loadCustomFont(); 
-        initialize();
+    public FamilyFeud() {
+        loadCustomFont();
+        initializeMainScreen();
     }
 
-    private void loadCustomFont() 
-    {
-        try 
-        {
+    private void loadCustomFont() {
+        try {
             customFont = Font.createFont(
                 Font.TRUETYPE_FONT,
                 getClass().getResourceAsStream("/com/Project/MightySouly-lxggD.ttf")
@@ -32,156 +26,115 @@ public class FamilyFeud
 
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
-        } 
-        catch (FontFormatException | IOException | NullPointerException e) 
-        {
+        } catch (FontFormatException | IOException | NullPointerException e) {
             System.out.println("Error loading font: " + e.getMessage());
-            customFont = new Font("Comic Sans MS", Font.BOLD, 50);  
+            customFont = new Font("Comic Sans MS", Font.BOLD, 50);
         }
     }
 
-    private void initialize() 
-    {
+    private void initializeMainScreen() {
         frame = new JFrame("Family Feud");
         frame.setSize(400, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout());
 
-        panel = new JPanel();
-        panel.setLayout(null); 
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
 
         JLabel titleLabel = new JLabel("FAMILY");
-        titleLabel.setFont(customFont);  
-        titleLabel.setForeground(new Color(30, 144, 255)); 
-        titleLabel.setBounds(61, 48, 300, 85); 
+        titleLabel.setFont(customFont);
+        titleLabel.setForeground(new Color(30, 144, 255));
+        titleLabel.setBounds(61, 48, 300, 85);
         panel.add(titleLabel);
 
         JLabel subtitleLabel = new JLabel("FEUD");
-        subtitleLabel.setFont(customFont);  
-        subtitleLabel.setForeground(Color.BLACK); 
+        subtitleLabel.setFont(customFont);
+        subtitleLabel.setForeground(Color.BLACK);
         subtitleLabel.setBounds(104, 144, 294, 85);
         panel.add(subtitleLabel);
 
         JButton playButton = new JButton("Play");
-        playButton.setFont(new Font("Agency FB", Font.BOLD, 30)); 
-        playButton.setBackground(new Color(30, 144, 255)); 
-        playButton.setForeground(Color.WHITE); 
+        playButton.setFont(new Font("Agency FB", Font.BOLD, 30));
+        playButton.setBackground(new Color(30, 144, 255));
+        playButton.setForeground(Color.WHITE);
         playButton.setFocusPainted(false);
         playButton.setBounds(225, 359, 100, 50);
 
-        playButton.addMouseListener(new MouseAdapter() 
-        {
+        playButton.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) 
-            {
+            public void mouseEntered(MouseEvent e) {
                 playButton.setBackground(Color.BLACK);
                 playButton.setForeground(Color.WHITE);
             }
 
             @Override
-            public void mouseExited(MouseEvent e) 
-            {
-                playButton.setBackground(new Color(30, 144, 255)); 
-                playButton.setForeground(Color.WHITE); 
+            public void mouseExited(MouseEvent e) {
+                playButton.setBackground(new Color(30, 144, 255));
+                playButton.setForeground(Color.WHITE);
             }
         });
 
-        playButton.addActionListener(new ActionListener() 
-        {
+        playButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                switchToGameInterface();
+            public void actionPerformed(ActionEvent e) {
+                switchToTeamAInterface();
             }
         });
 
         panel.add(playButton);
 
         JLabel imageLabel1 = new JLabel();
-        ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/com/Project/Human.png"));  
+        ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/com/Project/Human.png"));
         imageLabel1.setIcon(imageIcon1);
-        imageLabel1.setBounds(-31, 276, 258, 468);  
+        imageLabel1.setBounds(-31, 276, 258, 468);
         panel.add(imageLabel1);
+
+        JLabel imageLabel2 = new JLabel();
+        ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/com/Project/Question Mark.png"));
+        Image img = imageIcon2.getImage();
+        Image resizedImg = img.getScaledInstance(160, 110, Image.SCALE_SMOOTH);
+        imageLabel2.setIcon(new ImageIcon(resizedImg));
+        imageLabel2.setBounds(46, 227, 131, 138);
+        panel.add(imageLabel2);
 
         frame.getContentPane().add(panel);
         frame.setVisible(true);
-        
-        JLabel imageLabel2 = new JLabel();
-        ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/com/Project/Question Mark.png"));  
-
-        Image img = imageIcon2.getImage(); 
-        Image resizedImg = img.getScaledInstance(160, 110, Image.SCALE_SMOOTH); 
-        ImageIcon resizedIcon = new ImageIcon(resizedImg); 
-
-        imageLabel2.setIcon(resizedIcon);
-        imageLabel2.setBounds(46, 227, 131, 138);  
-        panel.add(imageLabel2);
-    }
-    
-    private void displayTeamDetails(Team teamA) 
-    {
-        frame.getContentPane().removeAll();
-        frame.repaint();
-
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new GridLayout(2, 1));
-        detailsPanel.setBackground(Color.WHITE);
-
-        JTextArea teamADetails = new JTextArea();
-        teamADetails.setText("Team A:\n");
-        for (Player player : teamA.getPlayers()) {
-            teamADetails.append(player.getName() + "\n");
-        }
-        detailsPanel.add(new JScrollPane(teamADetails));
-
-//        JTextArea teamBDetails = new JTextArea();
-//        teamBDetails.setText("Team B:\n");
-//        for (Player player : teamB.getPlayers()) {
-//            teamBDetails.append(player.getName() + "\n");
-//        }
-//        detailsPanel.add(new JScrollPane(teamBDetails));
-
-        frame.getContentPane().add(detailsPanel);
-        frame.validate();
     }
 
-    private void switchToGameInterface() {
-        frame.getContentPane().removeAll();
-        frame.repaint();
-
+    private void switchToTeamAInterface() {
         JPanel setupPanel = new JPanel();
         setupPanel.setLayout(null);
-        setupPanel.setBackground(Color.WHITE); 
+        setupPanel.setBackground(Color.WHITE);
 
-        JLabel teamALabel = new JLabel("Team A");
-        teamALabel.setFont(customFont.deriveFont(40f)); 
-        teamALabel.setForeground(new Color(30, 144, 255));  
-        teamALabel.setBounds(127, 34, 157, 84);
-        setupPanel.add(teamALabel);
+        JLabel teamLabel = new JLabel("Team A");
+        teamLabel.setFont(customFont.deriveFont(40f));
+        teamLabel.setForeground(new Color(30, 144, 255));
+        teamLabel.setBounds(127, 34, 157, 84);
+        setupPanel.add(teamLabel);
 
-        JTextField playerA1 = new JTextField("Player 1");
-        playerA1.setForeground(new Color(255, 255, 255));
-        playerA1.setBounds(20, 150, 100, 47);
-        playerA1.setHorizontalAlignment(JTextField.CENTER); 
-        playerA1.setFont(new Font("Gadugi", Font.BOLD, 14)); 
-        playerA1.setBackground(new Color(0, 0, 0)); 
-        setupPanel.add(playerA1);
+        JTextField player1Field = new JTextField("Player 1");
+        player1Field.setForeground(Color.WHITE);
+        player1Field.setBounds(20, 150, 100, 47);
+        player1Field.setHorizontalAlignment(JTextField.CENTER);
+        player1Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player1Field.setBackground(Color.BLACK);
+        setupPanel.add(player1Field);
 
-        JTextField playerA2 = new JTextField("Player 2");
-        playerA2.setForeground(new Color(255, 255, 255));
-        playerA2.setBounds(141, 150, 100, 47);
-        playerA2.setHorizontalAlignment(JTextField.CENTER); 
-        playerA2.setFont(new Font("Gadugi", Font.BOLD, 14)); 
-        playerA2.setBackground(new Color(0, 0, 0)); 
-        setupPanel.add(playerA2);
+        JTextField player2Field = new JTextField("Player 2");
+        player2Field.setForeground(Color.WHITE);
+        player2Field.setBounds(141, 150, 100, 47);
+        player2Field.setHorizontalAlignment(JTextField.CENTER);
+        player2Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player2Field.setBackground(Color.BLACK);
+        setupPanel.add(player2Field);
 
-        JTextField playerA3 = new JTextField("Player 3");
-        playerA3.setForeground(new Color(255, 255, 255));
-        playerA3.setBounds(262, 150, 100, 47);
-        playerA3.setHorizontalAlignment(JTextField.CENTER); 
-        playerA3.setFont(new Font("Gadugi", Font.BOLD, 14));
-        playerA3.setBackground(new Color(0, 0, 0)); 
-        setupPanel.add(playerA3);
+        JTextField player3Field = new JTextField("Player 3");
+        player3Field.setForeground(Color.WHITE);
+        player3Field.setBounds(262, 150, 100, 47);
+        player3Field.setHorizontalAlignment(JTextField.CENTER);
+        player3Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player3Field.setBackground(Color.BLACK);
+        setupPanel.add(player3Field);
 
         JLabel playerAImageLabel1 = new JLabel();
         ImageIcon playerImage1 = new ImageIcon(getClass().getResource("/com/Project/Player 1.png"));
@@ -207,38 +160,148 @@ public class FamilyFeud
         playerAImageLabel3.setIcon(new ImageIcon(resizedImg3));
         playerAImageLabel3.setBounds(238, 208, 168, 164);
         setupPanel.add(playerAImageLabel3);
-
-        JButton startGameButton = new JButton("Start Game");
-        startGameButton.setFont(customFont.deriveFont(10f)); 
-        startGameButton.setBackground(new Color(30, 144, 255));  
-        startGameButton.setForeground(Color.WHITE);
-        startGameButton.setFocusPainted(false);
-        startGameButton.setBounds(127, 393, 125, 47);
-        startGameButton.addActionListener(new ActionListener() 
+        
+        JButton backButtonA = new JButton("Back");
+        backButtonA.setFont(customFont.deriveFont(15f));
+        backButtonA.setBackground(new Color(30, 144, 255));
+        backButtonA.setForeground(Color.WHITE);
+        backButtonA.setFocusPainted(false);
+        backButtonA.setBounds(20, 393, 125, 47);
+        backButtonA.addActionListener(new ActionListener() 
         {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                Team teamA = new Team("Team A");
-                teamA.addPlayer(new Player(playerA1.getText()));
-                teamA.addPlayer(new Player(playerA2.getText()));
-                teamA.addPlayer(new Player(playerA3.getText()));
-
-                displayTeamDetails(teamA);
+                initializeMainScreen();
             }
         });
 
-        setupPanel.add(startGameButton);
+        setupPanel.add(backButtonA);
 
+        JButton nextButton = new JButton("Next");
+        nextButton.setFont(customFont.deriveFont(15f));
+        nextButton.setBackground(new Color(30, 144, 255));
+        nextButton.setForeground(Color.WHITE);
+        nextButton.setFocusPainted(false);
+        nextButton.setBounds(237, 393, 125, 47);
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchToTeamBInterface();
+            }
+        });
+
+        setupPanel.add(nextButton);
+
+        frame.getContentPane().removeAll();
         frame.getContentPane().add(setupPanel);
         frame.validate();
     }
 
-    public static void main(String[] args) 
-    {
-        FamilyFeud game = new FamilyFeud();
+    private void switchToTeamBInterface() {
+        JPanel setupPanel = new JPanel();
+        setupPanel.setLayout(null);
+        setupPanel.setBackground(Color.WHITE);
+
+        JLabel teamLabel = new JLabel("Team B");
+        teamLabel.setFont(customFont.deriveFont(40f));
+        teamLabel.setForeground(new Color(30, 144, 255));
+        teamLabel.setBounds(127, 34, 157, 84);
+        setupPanel.add(teamLabel);
+
+        JTextField player1Field = new JTextField("Player 1");
+        player1Field.setForeground(Color.WHITE);
+        player1Field.setBounds(20, 150, 100, 47);
+        player1Field.setHorizontalAlignment(JTextField.CENTER);
+        player1Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player1Field.setBackground(Color.BLACK);
+        setupPanel.add(player1Field);
+
+        JTextField player2Field = new JTextField("Player 2");
+        player2Field.setForeground(Color.WHITE);
+        player2Field.setBounds(141, 150, 100, 47);
+        player2Field.setHorizontalAlignment(JTextField.CENTER);
+        player2Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player2Field.setBackground(Color.BLACK);
+        setupPanel.add(player2Field);
+
+        JTextField player3Field = new JTextField("Player 3");
+        player3Field.setForeground(Color.WHITE);
+        player3Field.setBounds(262, 150, 100, 47);
+        player3Field.setHorizontalAlignment(JTextField.CENTER);
+        player3Field.setFont(new Font("Gadugi", Font.BOLD, 14));
+        player3Field.setBackground(Color.BLACK);
+        setupPanel.add(player3Field);
+
+        JLabel playerBImageLabel1 = new JLabel();
+        ImageIcon playerImage1 = new ImageIcon(getClass().getResource("/com/Project/Player 4.png"));
+        Image img1 = playerImage1.getImage();
+        Image resizedImg1 = img1.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        playerBImageLabel1.setIcon(new ImageIcon(resizedImg1));
+
+        playerBImageLabel1.setBounds(-12, 208, 156, 164); 
+        setupPanel.add(playerBImageLabel1);
         
-        game.switchToGameInterface();
+        JLabel playerBImageLabel2 = new JLabel();
+        ImageIcon playerImage2 = new ImageIcon(getClass().getResource("/com/Project/Player 5.png"));
+        Image img2 = playerImage2.getImage();
+        Image resizedImg2 = img2.getScaledInstance(155, 155, Image.SCALE_SMOOTH);
+        playerBImageLabel2.setIcon(new ImageIcon(resizedImg2));
+        playerBImageLabel2.setBounds(113, 225, 200, 135); 
+        setupPanel.add(playerBImageLabel2);
+
+        JLabel playerBImageLabel3 = new JLabel();
+        ImageIcon playerImage3 = new ImageIcon(getClass().getResource("/com/Project/Player 6.png"));
+        Image img3 = playerImage3.getImage();
+        Image resizedImg3 = img3.getScaledInstance(155, 155, Image.SCALE_SMOOTH);
+        playerBImageLabel3.setIcon(new ImageIcon(resizedImg3));
+        playerBImageLabel3.setBounds(237, 208, 168, 164);
+        setupPanel.add(playerBImageLabel3);
+        
+        JButton backButtonB = new JButton("Back");
+        backButtonB.setFont(customFont.deriveFont(15f));
+        backButtonB.setBackground(new Color(30, 144, 255));
+        backButtonB.setForeground(Color.WHITE);
+        backButtonB.setFocusPainted(false);
+        backButtonB.setBounds(20, 393, 125, 47);
+        backButtonB.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                switchToTeamAInterface();
+            }
+        });
+
+        setupPanel.add(backButtonB);
+
+        JButton nextButton = new JButton("Next");
+        nextButton.setFont(customFont.deriveFont(15f));
+        nextButton.setBackground(new Color(30, 144, 255));
+        nextButton.setForeground(Color.WHITE);
+        nextButton.setFocusPainted(false);
+        nextButton.setBounds(237, 393, 125, 47);
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayTeamDetails();
+            }
+        });
+
+        setupPanel.add(nextButton);
+
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(setupPanel);
+        frame.validate();
     }
 
+    private void displayTeamDetails() 
+    {
+        JOptionPane.showMessageDialog(frame, "Both teams are set. Game Ready!");
+    }
+
+    public static void main(String[] args) 
+    {
+        new FamilyFeud();
+    }
 }

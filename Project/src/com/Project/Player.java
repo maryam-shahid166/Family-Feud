@@ -1,31 +1,38 @@
 package com.Project;
 
-public class Player {
+public class Player 
+{
     private String name;
     private int score;
 
-    public Player(String name) {
+    public Player(String name) 
+    {
         this.name = name;
-        this.score = 0; // Default score
+        this.score = 0;
     }
 
-    public String getName() {
+    public String getName() 
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name) 
+    {
         this.name = name;
     }
 
-    public int getScore() {
+    public int getScore() 
+    {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(int score) 
+    {
         this.score = score;
     }
 
-    public void updateScore(int points) {
+    public void updateScore(int points) 
+    {
         this.score += points;
     }
 }

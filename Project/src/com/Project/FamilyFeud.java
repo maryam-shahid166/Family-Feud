@@ -8,16 +8,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class FamilyFeud {
+public class FamilyFeud 
+{
     private JFrame frame;
     private Font customFont;
+    private Player[] players = new Player[6];
 
-    public FamilyFeud() {
+    public FamilyFeud() 
+    {
         loadCustomFont();
         initializeMainScreen();
+        //displayTeamDetails();
     }
 
-    private void loadCustomFont() {
+    private void loadCustomFont() 
+    {
         try {
             customFont = Font.createFont(
                 Font.TRUETYPE_FONT,
@@ -184,10 +189,16 @@ public class FamilyFeud {
         nextButton.setForeground(Color.WHITE);
         nextButton.setFocusPainted(false);
         nextButton.setBounds(237, 393, 125, 47);
+        
         nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                switchToTeamBInterface();
+            public void actionPerformed(ActionEvent e) 
+            {
+                players[0] = new Player(player1Field.getText());
+                players[1] = new Player(player2Field.getText());
+                players[2] = new Player(player3Field.getText());
+
+                switchToTeamBInterface(); 
             }
         });
 
@@ -281,10 +292,16 @@ public class FamilyFeud {
         nextButton.setForeground(Color.WHITE);
         nextButton.setFocusPainted(false);
         nextButton.setBounds(237, 393, 125, 47);
+        
         nextButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                displayTeamDetails();
+            public void actionPerformed(ActionEvent e) 
+            {
+                players[3] = new Player(player1Field.getText());
+                players[4] = new Player(player2Field.getText());
+                players[5] = new Player(player3Field.getText());
+
+                displayTeamDetails(); 
             }
         });
 
@@ -295,9 +312,107 @@ public class FamilyFeud {
         frame.validate();
     }
 
-    private void displayTeamDetails() 
-    {
-        JOptionPane.showMessageDialog(frame, "Both teams are set. Game Ready!");
+    private void displayTeamDetails() {
+        JPanel loadingPanel = new JPanel();
+        loadingPanel.setLayout(null);
+        loadingPanel.setBackground(Color.WHITE);
+
+        JLabel titleLabel = new JLabel("Players List");
+        titleLabel.setFont(customFont.deriveFont(30f));
+        titleLabel.setForeground(new Color(30, 144, 255));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBounds(37, 11, 300, 40);
+        loadingPanel.add(titleLabel);
+
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setBackground(new Color(0, 0, 0));
+        progressBar.setForeground(new Color(30, 144, 255));
+        progressBar.setBounds(37, 270, 300, 30);
+        progressBar.setIndeterminate(true);
+
+        loadingPanel.add(progressBar);
+
+        JLabel teamALabel = new JLabel("Team A");
+        teamALabel.setBounds(37, 72, 68, 40);
+        teamALabel.setFont(customFont.deriveFont(20f));
+        loadingPanel.add(teamALabel);
+
+        JLabel playerA1Label = new JLabel(players[0].getName());
+        playerA1Label.setBounds(37, 130, 150, 30);
+        playerA1Label.setForeground(new Color(30, 144, 255));
+        playerA1Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerA1Label);
+
+        JLabel playerA2Label = new JLabel(players[1].getName());
+        playerA2Label.setBounds(37, 160, 150, 30);
+        playerA2Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerA2Label);
+
+        JLabel playerA3Label = new JLabel(players[2].getName());
+        playerA3Label.setBounds(37, 190, 150, 30);
+        playerA3Label.setForeground(new Color(30, 144, 255));
+        playerA3Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerA3Label);
+
+        JLabel teamBLabel = new JLabel("Team B");
+        teamBLabel.setBounds(263, 72, 68, 40);
+        teamBLabel.setFont(customFont.deriveFont(20f));
+        loadingPanel.add(teamBLabel);
+
+        JLabel playerB1Label = new JLabel(players[3].getName());
+        playerB1Label.setForeground(new Color(30, 144, 255));
+        playerB1Label.setBounds(263, 130, 150, 30);
+        playerB1Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerB1Label);
+
+        JLabel playerB2Label = new JLabel(players[4].getName());
+        playerB2Label.setBounds(263, 160, 150, 30);
+        playerB2Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerB2Label);
+
+        JLabel playerB3Label = new JLabel(players[5].getName());
+        playerB3Label.setBounds(263, 190, 150, 30);
+        playerB3Label.setForeground(new Color(30, 144, 255));
+        playerB3Label.setFont(customFont.deriveFont(17f));
+        loadingPanel.add(playerB3Label);
+
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(loadingPanel);
+        frame.validate();
+        
+        Timer timer = new Timer(5000, new ActionListener() 
+        { 
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                switchToGameInterface(); 
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void switchToGameInterface() {
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(null);
+        gamePanel.setBackground(Color.WHITE);
+
+        JLabel gameTitle = new JLabel("Welcome to Family Feud!");
+        gameTitle.setFont(customFont.deriveFont(30f));
+        gameTitle.setForeground(new Color(30, 144, 255));
+        gameTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        gameTitle.setBounds(50, 50, 300, 50);
+        gamePanel.add(gameTitle);
+
+        JLabel instructions = new JLabel("<html>The game starts now!<br>Get ready to answer.</html>");
+        instructions.setFont(new Font("Gadugi", Font.BOLD, 20));
+        instructions.setHorizontalAlignment(SwingConstants.CENTER);
+        instructions.setBounds(50, 150, 300, 100);
+        gamePanel.add(instructions);
+
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(gamePanel);
+        frame.validate();
     }
 
     public static void main(String[] args) 

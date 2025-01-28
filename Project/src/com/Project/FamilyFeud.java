@@ -7,18 +7,69 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FamilyFeud 
 {
-    private JFrame frame;
-    private Font customFont;
-    private Player[] players = new Player[6];
-
+	 private List<Question> questions = new ArrayList<>();
+	    private int maxRounds = 5;
+	    private int currentQuestionIndex = 0;
+	    private JFrame frame;
+	    private Font customFont;
+	    private Player[] players = new Player[6];
+	    
     public FamilyFeud() 
     {
         loadCustomFont();
         initializeMainScreen();
-        //displayTeamDetails();
+        initializeQuestions();
+    }
+    
+    private void initializeQuestions() 
+    {
+    	questions.add(new Question("Name something you might find in a kitchen.",
+                Arrays.asList(
+                    new Answer("Refrigerator", 40),
+                    new Answer("Stove", 25),
+                    new Answer("Sink", 15),
+                    new Answer("Microwave", 10),
+                    new Answer("Knife", 5),
+                    new Answer("Plate", 5)
+                )));
+            questions.add(new Question("Name a reason someone might call in sick to work.",
+                Arrays.asList(
+                    new Answer("Flu", 35),
+                    new Answer("Cold", 30),
+                    new Answer("Headache", 20),
+                    new Answer("Food Poisoning", 10),
+                    new Answer("Migraine", 5)
+                )));
+            questions.add(new Question("Name a fruit that is yellow.",
+                Arrays.asList(
+                    new Answer("Banana", 50),
+                    new Answer("Lemon", 25),
+                    new Answer("Pineapple", 15),
+                    new Answer("Mango", 7),
+                    new Answer("Yellow Apple", 3)
+                )));
+            questions.add(new Question("Name something people are afraid of.",
+                Arrays.asList(
+                    new Answer("Spiders", 40),
+                    new Answer("Heights", 30),
+                    new Answer("Darkness", 15),
+                    new Answer("Death", 10),
+                    new Answer("Public Speaking", 5)
+                )));
+            questions.add(new Question("Name a type of vehicle.",
+                Arrays.asList(
+                    new Answer("Car", 45),
+                    new Answer("Truck", 25),
+                    new Answer("Motorcycle", 15),
+                    new Answer("Bicycle", 10),
+                    new Answer("Bus", 5)
+                )));
     }
 
     private void loadCustomFont() 
@@ -385,35 +436,263 @@ public class FamilyFeud
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                switchToGameInterface(); 
+            	showRoundScreen();
             }
         });
         timer.setRepeats(false);
         timer.start();
     }
+    
+    private int currentRound = 1;
+    private Team currentTeam;
+    private Team teamA = new Team("Team A");
+    private Team teamB = new Team("Team B");
+    private String currentQuestion;
+    private int strikes;
+    private boolean stealPhase;
 
-    private void switchToGameInterface() {
-        JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(null);
-        gamePanel.setBackground(Color.WHITE);
+    private void showRoundScreen() {
+        JPanel roundPanel = new JPanel();
+        roundPanel.setLayout(null);
+        roundPanel.setBackground(Color.WHITE);
 
-        JLabel gameTitle = new JLabel("Welcome to Family Feud!");
-        gameTitle.setFont(customFont.deriveFont(30f));
-        gameTitle.setForeground(new Color(30, 144, 255));
-        gameTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        gameTitle.setBounds(50, 50, 300, 50);
-        gamePanel.add(gameTitle);
-
-        JLabel instructions = new JLabel("<html>The game starts now!<br>Get ready to answer.</html>");
-        instructions.setFont(new Font("Gadugi", Font.BOLD, 20));
-        instructions.setHorizontalAlignment(SwingConstants.CENTER);
-        instructions.setBounds(50, 150, 300, 100);
-        gamePanel.add(instructions);
+        JLabel roundLabel = new JLabel("Round " + currentRound);
+        roundLabel.setFont(customFont.deriveFont(40f));
+        roundLabel.setForeground(new Color(30, 144, 255));
+        roundLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        roundLabel.setBounds(50, 100, 300, 100);
+        roundPanel.add(roundLabel);
 
         frame.getContentPane().removeAll();
-        frame.getContentPane().add(gamePanel);
+        frame.getContentPane().add(roundPanel);
+        frame.validate();
+
+        Timer roundTimer = new Timer(5000, e -> {
+            generateNewQuestion();
+            startTeamTurn(currentTeam != null ? currentTeam : teamA);
+        });
+        roundTimer.setRepeats(false);
+        roundTimer.start();
+    }
+
+    private void startTeamTurn(Team team) {
+        currentTeam = team;
+        strikes = 0;
+        stealPhase = false;
+        createTeamInterface(team);
+    }
+
+    private void createTeamInterface(Team team) {
+        JPanel teamPanel = new JPanel();
+        teamPanel.setLayout(null);
+        teamPanel.setBackground(Color.WHITE);
+
+        // Team Label
+        JLabel teamLabel = new JLabel(team.getTeamName() + "'s Turn");
+        teamLabel.setFont(customFont.deriveFont(30f));
+        teamLabel.setForeground(new Color(30, 144, 255));
+        teamLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        teamLabel.setBounds(50, 20, 300, 50);
+        teamPanel.add(teamLabel);
+
+        // Question Label
+        JLabel questionLabel = new JLabel("<html><center>" + currentQuestion + "</center></html>");
+        questionLabel.setFont(customFont.deriveFont(25f));
+        questionLabel.setForeground(Color.BLACK);
+        questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        questionLabel.setBounds(20, 100, 360, 100);
+        teamPanel.add(questionLabel);
+
+        // Input field
+        JTextField answerField = new JTextField();
+        answerField.setFont(new Font("Gadugi", Font.BOLD, 20));
+        answerField.setHorizontalAlignment(JTextField.CENTER);
+        answerField.setBounds(50, 220, 300, 50);
+        teamPanel.add(answerField);
+
+        // Timer Label
+        JLabel timerLabel = new JLabel("Time Left: 10");
+        timerLabel.setFont(customFont.deriveFont(20f));
+        timerLabel.setForeground(new Color(30, 144, 255));
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timerLabel.setBounds(150, 300, 100, 30);
+        teamPanel.add(timerLabel);
+
+        // Strikes Label
+        JLabel strikesLabel = new JLabel("Strikes: " + strikes);
+        strikesLabel.setFont(customFont.deriveFont(20f));
+        strikesLabel.setForeground(Color.RED);
+        strikesLabel.setBounds(320, 20, 100, 30);
+        teamPanel.add(strikesLabel);
+
+        // Submit Button
+        JButton submitButton = new JButton("Submit");
+        submitButton.setFont(customFont.deriveFont(20f));
+        submitButton.setBackground(new Color(30, 144, 255));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setFocusPainted(false);
+        submitButton.setBounds(150, 350, 100, 40);
+        
+        Timer timer = new Timer(1000, new ActionListener() {
+            int timeLeft = 10;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                timeLeft--;
+                timerLabel.setText("Time Left: " + timeLeft);
+                if (timeLeft <= 0) {
+                    ((Timer) e.getSource()).stop();
+                    handleAnswer(null, team);
+                }
+            }
+        });
+
+        submitButton.addActionListener(e -> {
+            String answer = answerField.getText().trim();
+            if (!answer.isEmpty()) {
+                timer.stop();
+                handleAnswer(answer, team);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Please enter an answer!");
+            }
+        });
+
+        teamPanel.add(submitButton);
+        timer.start();
+
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(teamPanel);
         frame.validate();
     }
+
+    private void handleAnswer(String answer, Team team) {
+        boolean correct = false;
+        int points = 0;
+        if (answer != null) {
+            String cleanAnswer = answer.toLowerCase().trim();
+            for (Answer a : questions.get(currentQuestionIndex).answers) {
+                if (a.text.toLowerCase().equals(cleanAnswer)) {
+                    correct = true;
+                    points = a.points;
+                    break;
+                }
+            }
+        }
+
+        if (correct) {
+            team.addScore(points);
+            JOptionPane.showMessageDialog(frame, "Correct! " + team.getTeamName() + " gains " + 
+                points + " points!");
+            currentQuestionIndex++;
+            
+            if (currentRound >= maxRounds) {
+                showGameOver();
+            } else {
+                currentRound++;
+                showRoundScreen();
+            }
+        } else {
+            strikes++;
+            if (strikes < 3) {
+                JOptionPane.showMessageDialog(frame, "Strike " + strikes + "! Try again!");
+                createTeamInterface(team);
+            } else {
+                if (!stealPhase) {
+                    stealPhase = true;
+                    Team otherTeam = (team == teamA) ? teamB : teamA;
+                    JOptionPane.showMessageDialog(frame, "3 Strikes! " + otherTeam.getTeamName() + " can steal!");
+                    createTeamInterface(otherTeam);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Steal failed! No points awarded.");
+                    currentQuestionIndex++;
+                    if (currentRound >= maxRounds) {
+                        showGameOver();
+                    } else {
+                        currentRound++;
+                        showRoundScreen();
+                    }
+                }
+            }
+        }
+    }
+    
+    private void generateNewQuestion() {
+        if (currentQuestionIndex >= questions.size()) {
+            currentQuestionIndex = 0; // Reset or handle end of questions
+        }
+        currentQuestion = questions.get(currentQuestionIndex).text;
+    }
+
+    private boolean isCorrectAnswer(String answer) {
+        String cleanAnswer = answer.toLowerCase().trim();
+        return questions.get(currentQuestionIndex).answers.contains(cleanAnswer);
+    }
+    
+    private void showGameOver() {
+        JPanel gameOverPanel = new JPanel();
+        gameOverPanel.setLayout(null);
+        gameOverPanel.setBackground(Color.WHITE);
+
+        // Determine the winner and select appropriate meme
+        String imagePath = "/com/Project/Announce.png";
+        String winningTeam = teamA.getTeamScore() > teamB.getTeamScore() ? "Team A!" : "Team B!";
+        
+        // Winning Team Label
+        JLabel winnerLabel = new JLabel(winningTeam);
+        winnerLabel.setFont(customFont.deriveFont(30f));
+        winnerLabel.setForeground(new Color(30, 144, 255));
+        winnerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        winnerLabel.setBounds(163, 31, 300, 40);
+        gameOverPanel.add(winnerLabel);
+
+        // Load and display meme image
+        ImageIcon memeIcon = new ImageIcon(getClass().getResource(imagePath));
+        Image scaledMeme = memeIcon.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+        JLabel memeLabel = new JLabel(new ImageIcon(scaledMeme));
+        memeLabel.setBounds(50, 50, 300, 200);
+        gameOverPanel.add(memeLabel);
+
+        // Display final scores
+        JLabel scoreLabel = new JLabel("<html><center>Team A: " + teamA.getTeamScore() 
+            + "<br>Team B: " + teamB.getTeamScore() + "</center></html>");
+        scoreLabel.setFont(customFont.deriveFont(25f));
+        scoreLabel.setForeground(new Color(30, 144, 255));
+        scoreLabel.setBounds(50, 260, 300, 100);
+        scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        gameOverPanel.add(scoreLabel);
+
+        // Play Again Button
+        JButton playAgainButton = new JButton("Play Again");
+        playAgainButton.setFont(customFont.deriveFont(20f));
+        playAgainButton.setBackground(new Color(30, 144, 255));
+        playAgainButton.setForeground(Color.WHITE);
+        playAgainButton.setFocusPainted(false);
+        playAgainButton.setBounds(50, 370, 150, 40);
+        playAgainButton.addActionListener(e -> {
+            // Reset game state
+            teamA = new Team("Team A");
+            teamB = new Team("Team B");
+            currentRound = 1;
+            currentQuestionIndex = 0;
+            switchToTeamAInterface();
+        });
+        gameOverPanel.add(playAgainButton);
+
+        // Exit Button
+        JButton exitButton = new JButton("Exit");
+        exitButton.setFont(customFont.deriveFont(20f));
+        exitButton.setBackground(Color.RED);
+        exitButton.setForeground(Color.WHITE);
+        exitButton.setFocusPainted(false);
+        exitButton.setBounds(220, 370, 150, 40);
+        exitButton.addActionListener(e -> System.exit(0));
+        gameOverPanel.add(exitButton);
+
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(gameOverPanel);
+        frame.validate();
+    }
+
 
     public static void main(String[] args) 
     {

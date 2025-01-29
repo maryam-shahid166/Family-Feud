@@ -31,35 +31,36 @@ public class FamilyFeud
     {
     	questions.add(new Question("Name something you might find in a kitchen.",
                 Arrays.asList(
-                    new Answer("Refrigerator", 40),
+                    new Answer("Fridge", 40),
                     new Answer("Stove", 25),
                     new Answer("Sink", 15),
                     new Answer("Microwave", 10),
                     new Answer("Knife", 5),
+                    new Answer("Spoon", 5),
                     new Answer("Plate", 5)
                 )));
             questions.add(new Question("Name a reason someone might call in sick to work.",
                 Arrays.asList(
                     new Answer("Flu", 35),
-                    new Answer("Cold", 30),
+                    new Answer("Excuse", 30),
                     new Answer("Headache", 20),
                     new Answer("Food Poisoning", 10),
-                    new Answer("Migraine", 5)
+                    new Answer("Hospital", 5)
                 )));
             questions.add(new Question("Name a fruit that is yellow.",
                 Arrays.asList(
                     new Answer("Banana", 50),
                     new Answer("Lemon", 25),
-                    new Answer("Pineapple", 15),
-                    new Answer("Mango", 7),
+                    new Answer("Mango", 15),
+                    new Answer("Pineapple", 7),
                     new Answer("Yellow Apple", 3)
                 )));
             questions.add(new Question("Name something people are afraid of.",
                 Arrays.asList(
-                    new Answer("Spiders", 40),
+                    new Answer("DEATH", 40),
                     new Answer("Heights", 30),
                     new Answer("Darkness", 15),
-                    new Answer("Death", 10),
+                    new Answer("Spiders", 10),
                     new Answer("Public Speaking", 5)
                 )));
             questions.add(new Question("Name a type of vehicle.",
@@ -564,6 +565,50 @@ public class FamilyFeud
         frame.getContentPane().add(teamPanel);
         frame.validate();
     }
+    
+    private void showCustomDialog(String message, Color color) {
+        JDialog dialog = new JDialog(frame, "", true);
+        dialog.setUndecorated(true);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createLineBorder(color, 3));
+        panel.setPreferredSize(new Dimension(400, 150));
+
+        // Remove label.setForeground(color) as colors are handled via HTML
+        JLabel label = new JLabel(message); // Message already contains HTML styling
+        label.setFont(customFont.deriveFont(25f));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(label, BorderLayout.CENTER);
+
+        // OK Button setup remains unchanged
+        JButton okButton = new JButton("OK");
+        okButton.setFont(customFont.deriveFont(20f));
+        okButton.setBackground(color);
+        okButton.setForeground(Color.WHITE);
+        okButton.setFocusPainted(false);
+        okButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                okButton.setBackground(Color.BLACK);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                okButton.setBackground(color);
+            }
+        });
+        okButton.addActionListener(e -> dialog.dispose());
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.add(okButton);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.add(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
+    }
 
     private void handleAnswer(String answer, Team team) {
         boolean correct = false;
@@ -579,10 +624,16 @@ public class FamilyFeud
             }
         }
 
+        // Custom blue color
+        Color customBlue = new Color(30, 144, 255);
+
         if (correct) {
             team.addScore(points);
-            JOptionPane.showMessageDialog(frame, "Correct! " + team.getTeamName() + " gains " + 
-                points + " points!");
+            // Correct message with green "CORRECT!", team name and points in black, rest in custom blue
+            String correctMessage = "<html><center><font color='green'>CORRECT!</font><br>" +
+                                    "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>" +
+                                    "<font color='black'>" + team.getTeamName() + "</font> GAINS <font color='black'>" + points + "</font> POINTS!</font></center></html>";
+            showCustomDialog(correctMessage, customBlue); // Custom blue theme
             currentQuestionIndex++;
             
             if (currentRound >= maxRounds) {
@@ -594,16 +645,26 @@ public class FamilyFeud
         } else {
             strikes++;
             if (strikes < 3) {
-                JOptionPane.showMessageDialog(frame, "Strike " + strikes + "! Try again!");
+                // Strike message with red "STRIKE X!", rest in custom blue
+                String strikeMessage = "<html><center><font color='red'>STRIKE " + strikes + 
+                                       "!</font><br><font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>TRY AGAIN!</font></center></html>";
+                showCustomDialog(strikeMessage, Color.RED); // Red theme
                 createTeamInterface(team);
             } else {
                 if (!stealPhase) {
                     stealPhase = true;
                     Team otherTeam = (team == teamA) ? teamB : teamA;
-                    JOptionPane.showMessageDialog(frame, "3 Strikes! " + otherTeam.getTeamName() + " can steal!");
+                    // 3 Strikes message with red "3 STRIKES!", team name in black, rest in custom blue
+                    String threeStrikesMessage = "<html><center><font color='red'>3 STRIKES!</font><br>" +
+                                                 "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>" +
+                                                 "<font color='black'>" + otherTeam.getTeamName() + "</font> CAN STEAL!</font></center></html>";
+                    showCustomDialog(threeStrikesMessage, customBlue); // Custom blue theme
                     createTeamInterface(otherTeam);
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Steal failed! No points awarded.");
+                    // Steal failed message with red "STEAL FAILED!", rest in custom blue
+                    String stealFailedMessage = "<html><center><font color='red'>STEAL FAILED!</font><br>" +
+                                                "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>NO POINTS AWARDED!</font></center></html>";
+                    showCustomDialog(stealFailedMessage, customBlue); // Custom blue theme
                     currentQuestionIndex++;
                     if (currentRound >= maxRounds) {
                         showGameOver();

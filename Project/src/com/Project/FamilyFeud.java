@@ -519,7 +519,12 @@ public class FamilyFeud
         Timer roundTimer = new Timer(5000, e -> 
         {
             generateNewQuestion();
-            startTeamTurn(currentTeam != null ? currentTeam : teamA);
+            
+            if (currentTeam == null) 
+            {
+                currentTeam = teamA;
+            }
+            startTeamTurn(currentTeam);
         });
         roundTimer.setRepeats(false);
         roundTimer.start();
@@ -728,6 +733,7 @@ public class FamilyFeud
                 currentRound++;
                 showRoundScreen();
             }
+            currentTeam = team;
         } 
         
         else 
@@ -750,6 +756,8 @@ public class FamilyFeud
                 {
                     stealPhase = true;
                     Team otherTeam = (team == teamA) ? teamB : teamA;
+                    
+                    currentTeam = otherTeam;
                     
                     // 3 Strikes message with red "3 STRIKES!", team name in black, rest in custom blue
                     String threeStrikesMessage = "<html><center><font color='red'>3 STRIKES!</font><br>" +
@@ -776,6 +784,7 @@ public class FamilyFeud
                         currentRound++;
                         showRoundScreen();
                     }
+                    currentTeam = (team == teamA) ? teamB : teamA;
                 }
             }
         }
@@ -841,11 +850,14 @@ public class FamilyFeud
         playAgainButton.setBounds(50, 370, 150, 40);
         playAgainButton.addActionListener(e -> 
         {
-            //Reset game state:
+            // Reset game state
             teamA = new Team("Team A");
             teamB = new Team("Team B");
             currentRound = 1;
             currentQuestionIndex = 0;
+            currentTeam = null;  
+            strikes = 0;
+            stealPhase = false;
             switchToTeamAInterface();
         });
         gameOverPanel.add(playAgainButton);

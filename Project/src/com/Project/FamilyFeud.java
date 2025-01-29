@@ -1,5 +1,6 @@
 package com.Project;
 
+//All libraries that were used in this project:
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,12 +15,20 @@ import java.util.Arrays;
 public class FamilyFeud 
 {
 	 private List<Question> questions = new ArrayList<>();
-	    private int maxRounds = 5;
-	    private int currentQuestionIndex = 0;
-	    private JFrame frame;
-	    private Font customFont;
-	    private Player[] players = new Player[6];
+	 private int maxRounds = 5;
+	 private int currentQuestionIndex = 0;
+	 private JFrame frame;
+	 private Font customFont;
+	 private Player[] players = new Player[6];
+	 private int currentRound = 1;
+	 private Team currentTeam;
+	 private Team teamA = new Team("Team A");
+	 private Team teamB = new Team("Team B");
+	 private String currentQuestion;
+	 private int strikes;
+	 private boolean stealPhase;
 	    
+	//Constructor for this main class (functions executed in order):
     public FamilyFeud() 
     {
         loadCustomFont();
@@ -27,6 +36,7 @@ public class FamilyFeud
         initializeQuestions();
     }
     
+    //All ready made questions for this game:
     private void initializeQuestions() 
     {
     	questions.add(new Question("Name something you might find in a kitchen.",
@@ -72,10 +82,12 @@ public class FamilyFeud
                     new Answer("Bus", 5)
                 )));
     }
-
+    
+    //We used and set up a custom font for this game "MightySoul":
     private void loadCustomFont() 
     {
-        try {
+        try 
+        {
             customFont = Font.createFont(
                 Font.TRUETYPE_FONT,
                 getClass().getResourceAsStream("/com/Project/MightySouly-lxggD.ttf")
@@ -83,13 +95,19 @@ public class FamilyFeud
 
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
-        } catch (FontFormatException | IOException | NullPointerException e) {
+        } 
+        
+        //Some exceptions were also used here:
+        catch (FontFormatException | IOException | NullPointerException e) 
+        {
             System.out.println("Error loading font: " + e.getMessage());
-            customFont = new Font("Comic Sans MS", Font.BOLD, 50);
+            customFont = new Font("Comic Sans MS", Font.BOLD, 50); //If our custom font does not work, we have a back up font as well
         }
     }
-
-    private void initializeMainScreen() {
+    
+    //1st Interface that appears as we load the game:
+    private void initializeMainScreen() 
+    {
         frame = new JFrame("Family Feud");
         frame.setSize(400, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +115,8 @@ public class FamilyFeud
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
-
+        
+        //Title of the game:
         JLabel titleLabel = new JLabel("FAMILY");
         titleLabel.setFont(customFont);
         titleLabel.setForeground(new Color(30, 144, 255));
@@ -109,37 +128,46 @@ public class FamilyFeud
         subtitleLabel.setForeground(Color.BLACK);
         subtitleLabel.setBounds(104, 144, 294, 85);
         panel.add(subtitleLabel);
-
+        
+        //Play Button:
         JButton playButton = new JButton("Play");
         playButton.setFont(new Font("Agency FB", Font.BOLD, 30));
         playButton.setBackground(new Color(30, 144, 255));
         playButton.setForeground(Color.WHITE);
         playButton.setFocusPainted(false);
         playButton.setBounds(225, 359, 100, 50);
-
-        playButton.addMouseListener(new MouseAdapter() {
+        
+        //Button colors change when mouse is hovered:
+        playButton.addMouseListener(new MouseAdapter() 
+        {
             @Override
-            public void mouseEntered(MouseEvent e) {
+            public void mouseEntered(MouseEvent e) 
+            {
                 playButton.setBackground(Color.BLACK);
                 playButton.setForeground(Color.WHITE);
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(MouseEvent e) 
+            {
                 playButton.setBackground(new Color(30, 144, 255));
                 playButton.setForeground(Color.WHITE);
             }
         });
-
-        playButton.addActionListener(new ActionListener() {
+        
+        //Go to second screen when Play Button is clicked:
+        playButton.addActionListener(new ActionListener() 
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) 
+            {
                 switchToTeamAInterface();
             }
         });
 
         panel.add(playButton);
-
+        
+        //Custom images are displayed on the earlier screens:
         JLabel imageLabel1 = new JLabel();
         ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/com/Project/Human.png"));
         imageLabel1.setIcon(imageIcon1);
@@ -157,18 +185,22 @@ public class FamilyFeud
         frame.getContentPane().add(panel);
         frame.setVisible(true);
     }
-
-    private void switchToTeamAInterface() {
+    
+    //Interface for Team A details:
+    private void switchToTeamAInterface() 
+    {
         JPanel setupPanel = new JPanel();
         setupPanel.setLayout(null);
         setupPanel.setBackground(Color.WHITE);
-
+        
+        //Team Name:
         JLabel teamLabel = new JLabel("Team A");
         teamLabel.setFont(customFont.deriveFont(40f));
         teamLabel.setForeground(new Color(30, 144, 255));
         teamLabel.setBounds(127, 34, 157, 84);
         setupPanel.add(teamLabel);
-
+        
+        //Team Players:
         JTextField player1Field = new JTextField("Player 1");
         player1Field.setForeground(Color.WHITE);
         player1Field.setBounds(20, 150, 100, 47);
@@ -192,13 +224,13 @@ public class FamilyFeud
         player3Field.setFont(new Font("Gadugi", Font.BOLD, 14));
         player3Field.setBackground(Color.BLACK);
         setupPanel.add(player3Field);
-
+        
+        //Team Member Images:
         JLabel playerAImageLabel1 = new JLabel();
         ImageIcon playerImage1 = new ImageIcon(getClass().getResource("/com/Project/Player 1.png"));
         Image img1 = playerImage1.getImage();
         Image resizedImg1 = img1.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         playerAImageLabel1.setIcon(new ImageIcon(resizedImg1));
-
         playerAImageLabel1.setBounds(-36, 172, 157, 200); 
         setupPanel.add(playerAImageLabel1);
         
@@ -218,12 +250,14 @@ public class FamilyFeud
         playerAImageLabel3.setBounds(238, 208, 168, 164);
         setupPanel.add(playerAImageLabel3);
         
+        //If we want to go back to the initial screen:
         JButton backButtonA = new JButton("Back");
         backButtonA.setFont(customFont.deriveFont(15f));
         backButtonA.setBackground(new Color(30, 144, 255));
         backButtonA.setForeground(Color.WHITE);
         backButtonA.setFocusPainted(false);
         backButtonA.setBounds(20, 393, 125, 47);
+        
         backButtonA.addActionListener(new ActionListener() 
         {
             @Override
@@ -234,7 +268,8 @@ public class FamilyFeud
         });
 
         setupPanel.add(backButtonA);
-
+        
+        //If we want to proceed to the next screen:
         JButton nextButton = new JButton("Next");
         nextButton.setFont(customFont.deriveFont(15f));
         nextButton.setBackground(new Color(30, 144, 255));
@@ -242,14 +277,17 @@ public class FamilyFeud
         nextButton.setFocusPainted(false);
         nextButton.setBounds(237, 393, 125, 47);
         
-        nextButton.addActionListener(new ActionListener() {
+        nextButton.addActionListener(new ActionListener() 
+        {
+        	//All player names are stored and moved on to the next screen:
             @Override
             public void actionPerformed(ActionEvent e) 
             {
                 players[0] = new Player(player1Field.getText());
                 players[1] = new Player(player2Field.getText());
                 players[2] = new Player(player3Field.getText());
-
+                
+                //Go to Team B interface:
                 switchToTeamBInterface(); 
             }
         });
@@ -261,17 +299,20 @@ public class FamilyFeud
         frame.validate();
     }
 
-    private void switchToTeamBInterface() {
+    private void switchToTeamBInterface() 
+    {
         JPanel setupPanel = new JPanel();
         setupPanel.setLayout(null);
         setupPanel.setBackground(Color.WHITE);
-
+        
+        //Team Name:
         JLabel teamLabel = new JLabel("Team B");
         teamLabel.setFont(customFont.deriveFont(40f));
         teamLabel.setForeground(new Color(30, 144, 255));
         teamLabel.setBounds(127, 34, 157, 84);
         setupPanel.add(teamLabel);
-
+        
+        //Player Names:
         JTextField player1Field = new JTextField("Player 1");
         player1Field.setForeground(Color.WHITE);
         player1Field.setBounds(20, 150, 100, 47);
@@ -295,13 +336,13 @@ public class FamilyFeud
         player3Field.setFont(new Font("Gadugi", Font.BOLD, 14));
         player3Field.setBackground(Color.BLACK);
         setupPanel.add(player3Field);
-
+        
+        //Player Images:
         JLabel playerBImageLabel1 = new JLabel();
         ImageIcon playerImage1 = new ImageIcon(getClass().getResource("/com/Project/Player 4.png"));
         Image img1 = playerImage1.getImage();
         Image resizedImg1 = img1.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         playerBImageLabel1.setIcon(new ImageIcon(resizedImg1));
-
         playerBImageLabel1.setBounds(-12, 208, 156, 164); 
         setupPanel.add(playerBImageLabel1);
         
@@ -321,6 +362,7 @@ public class FamilyFeud
         playerBImageLabel3.setBounds(237, 208, 168, 164);
         setupPanel.add(playerBImageLabel3);
         
+        //Back button to take back to Team A's interface:
         JButton backButtonB = new JButton("Back");
         backButtonB.setFont(customFont.deriveFont(15f));
         backButtonB.setBackground(new Color(30, 144, 255));
@@ -337,7 +379,8 @@ public class FamilyFeud
         });
 
         setupPanel.add(backButtonB);
-
+        
+        //Next button to take to the next screen:
         JButton nextButton = new JButton("Next");
         nextButton.setFont(customFont.deriveFont(15f));
         nextButton.setBackground(new Color(30, 144, 255));
@@ -345,14 +388,17 @@ public class FamilyFeud
         nextButton.setFocusPainted(false);
         nextButton.setBounds(237, 393, 125, 47);
         
-        nextButton.addActionListener(new ActionListener() {
+        nextButton.addActionListener(new ActionListener() 
+        {
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+            	//Storing Player details:
                 players[3] = new Player(player1Field.getText());
                 players[4] = new Player(player2Field.getText());
                 players[5] = new Player(player3Field.getText());
-
+                
+                //Move on to the display interface:
                 displayTeamDetails(); 
             }
         });
@@ -363,19 +409,22 @@ public class FamilyFeud
         frame.getContentPane().add(setupPanel);
         frame.validate();
     }
-
-    private void displayTeamDetails() {
+    
+    //Display details of both the teams:
+    private void displayTeamDetails() 
+    {
         JPanel loadingPanel = new JPanel();
         loadingPanel.setLayout(null);
         loadingPanel.setBackground(Color.WHITE);
-
+        
         JLabel titleLabel = new JLabel("Players List");
         titleLabel.setFont(customFont.deriveFont(30f));
         titleLabel.setForeground(new Color(30, 144, 255));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBounds(37, 11, 300, 40);
         loadingPanel.add(titleLabel);
-
+        
+        //A custom colored progress bar that takes 5 seconds to load:
         JProgressBar progressBar = new JProgressBar();
         progressBar.setBackground(new Color(0, 0, 0));
         progressBar.setForeground(new Color(30, 144, 255));
@@ -383,7 +432,8 @@ public class FamilyFeud
         progressBar.setIndeterminate(true);
 
         loadingPanel.add(progressBar);
-
+        
+        //Team A players:
         JLabel teamALabel = new JLabel("Team A");
         teamALabel.setBounds(37, 72, 68, 40);
         teamALabel.setFont(customFont.deriveFont(20f));
@@ -406,6 +456,7 @@ public class FamilyFeud
         playerA3Label.setFont(customFont.deriveFont(17f));
         loadingPanel.add(playerA3Label);
 
+        //Team B players:
         JLabel teamBLabel = new JLabel("Team B");
         teamBLabel.setBounds(263, 72, 68, 40);
         teamBLabel.setFont(customFont.deriveFont(20f));
@@ -432,11 +483,13 @@ public class FamilyFeud
         frame.getContentPane().add(loadingPanel);
         frame.validate();
         
+        //Timer for the progress bar (5 seconds):
         Timer timer = new Timer(5000, new ActionListener() 
         { 
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+            	//Moves to the round name interface:
             	showRoundScreen();
             }
         });
@@ -444,15 +497,9 @@ public class FamilyFeud
         timer.start();
     }
     
-    private int currentRound = 1;
-    private Team currentTeam;
-    private Team teamA = new Team("Team A");
-    private Team teamB = new Team("Team B");
-    private String currentQuestion;
-    private int strikes;
-    private boolean stealPhase;
-
-    private void showRoundScreen() {
+    //Displays the round number/name for some seconds:
+    private void showRoundScreen() 
+    {
         JPanel roundPanel = new JPanel();
         roundPanel.setLayout(null);
         roundPanel.setBackground(Color.WHITE);
@@ -467,28 +514,36 @@ public class FamilyFeud
         frame.getContentPane().removeAll();
         frame.getContentPane().add(roundPanel);
         frame.validate();
-
-        Timer roundTimer = new Timer(5000, e -> {
+        
+        //For 5 seconds, the round title is displayed:
+        Timer roundTimer = new Timer(5000, e -> 
+        {
             generateNewQuestion();
             startTeamTurn(currentTeam != null ? currentTeam : teamA);
         });
         roundTimer.setRepeats(false);
         roundTimer.start();
     }
-
-    private void startTeamTurn(Team team) {
+    
+    //A team's turn is initialized:
+    private void startTeamTurn(Team team) 
+    {
         currentTeam = team;
         strikes = 0;
         stealPhase = false;
+        
+        //Proceed to the questions interface:
         createTeamInterface(team);
     }
-
-    private void createTeamInterface(Team team) {
+    
+    //Show the question answering interfaces:
+    private void createTeamInterface(Team team) 
+    {
         JPanel teamPanel = new JPanel();
         teamPanel.setLayout(null);
         teamPanel.setBackground(Color.WHITE);
 
-        // Team Label
+        // Team Label:
         JLabel teamLabel = new JLabel(team.getTeamName() + "'s Turn");
         teamLabel.setFont(customFont.deriveFont(30f));
         teamLabel.setForeground(new Color(30, 144, 255));
@@ -496,7 +551,7 @@ public class FamilyFeud
         teamLabel.setBounds(50, 20, 300, 50);
         teamPanel.add(teamLabel);
 
-        // Question Label
+        // Question Label:
         JLabel questionLabel = new JLabel("<html><center>" + currentQuestion + "</center></html>");
         questionLabel.setFont(customFont.deriveFont(25f));
         questionLabel.setForeground(Color.BLACK);
@@ -504,14 +559,14 @@ public class FamilyFeud
         questionLabel.setBounds(20, 100, 360, 100);
         teamPanel.add(questionLabel);
 
-        // Input field
+        // Input field:
         JTextField answerField = new JTextField();
         answerField.setFont(new Font("Gadugi", Font.BOLD, 20));
         answerField.setHorizontalAlignment(JTextField.CENTER);
         answerField.setBounds(50, 220, 300, 50);
         teamPanel.add(answerField);
 
-        // Timer Label
+        // Timer Label:
         JLabel timerLabel = new JLabel("Time Left: 10");
         timerLabel.setFont(customFont.deriveFont(20f));
         timerLabel.setForeground(new Color(30, 144, 255));
@@ -519,14 +574,14 @@ public class FamilyFeud
         timerLabel.setBounds(150, 300, 100, 30);
         teamPanel.add(timerLabel);
 
-        // Strikes Label
+        // Strikes Label:
         JLabel strikesLabel = new JLabel("Strikes: " + strikes);
         strikesLabel.setFont(customFont.deriveFont(20f));
         strikesLabel.setForeground(Color.RED);
         strikesLabel.setBounds(320, 20, 100, 30);
         teamPanel.add(strikesLabel);
 
-        // Submit Button
+        // Submit Button:
         JButton submitButton = new JButton("Submit");
         submitButton.setFont(customFont.deriveFont(20f));
         submitButton.setBackground(new Color(30, 144, 255));
@@ -534,11 +589,14 @@ public class FamilyFeud
         submitButton.setFocusPainted(false);
         submitButton.setBounds(150, 350, 100, 40);
         
-        Timer timer = new Timer(1000, new ActionListener() {
+        //The team is given only 10 seconds to answer their question:
+        Timer timer = new Timer(1000, new ActionListener() 
+        {
             int timeLeft = 10;
 
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) 
+            {
                 timeLeft--;
                 timerLabel.setText("Time Left: " + timeLeft);
                 if (timeLeft <= 0) {
@@ -548,16 +606,24 @@ public class FamilyFeud
             }
         });
 
-        submitButton.addActionListener(e -> {
+        submitButton.addActionListener(e -> 
+        {
             String answer = answerField.getText().trim();
-            if (!answer.isEmpty()) {
+            
+            //If the answer field is filled, proceed to the next screen to check the answer:
+            if (!answer.isEmpty()) 
+            {
                 timer.stop();
                 handleAnswer(answer, team);
-            } else {
+            } 
+            
+            else 
+            {
                 JOptionPane.showMessageDialog(frame, "Please enter an answer!");
             }
         });
-
+        
+        //Submit button to submit your answer:
         teamPanel.add(submitButton);
         timer.start();
 
@@ -566,7 +632,9 @@ public class FamilyFeud
         frame.validate();
     }
     
-    private void showCustomDialog(String message, Color color) {
+    //A custom colored dialog box that opens after the submit button is clicked:
+    private void showCustomDialog(String message, Color color) 
+    {
         JDialog dialog = new JDialog(frame, "", true);
         dialog.setUndecorated(true);
         JPanel panel = new JPanel(new BorderLayout());
@@ -574,29 +642,33 @@ public class FamilyFeud
         panel.setBorder(BorderFactory.createLineBorder(color, 3));
         panel.setPreferredSize(new Dimension(400, 150));
 
-        // Remove label.setForeground(color) as colors are handled via HTML
-        JLabel label = new JLabel(message); // Message already contains HTML styling
+        //label.setForeground(color) as colors are handled via HTML
+        JLabel label = new JLabel(message); //Message already contains HTML styling
         label.setFont(customFont.deriveFont(25f));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(label, BorderLayout.CENTER);
 
-        // OK Button setup remains unchanged
         JButton okButton = new JButton("OK");
         okButton.setFont(customFont.deriveFont(20f));
         okButton.setBackground(color);
         okButton.setForeground(Color.WHITE);
         okButton.setFocusPainted(false);
-        okButton.addMouseListener(new MouseAdapter() {
+        okButton.addMouseListener(new MouseAdapter() 
+        {
             @Override
-            public void mouseEntered(MouseEvent e) {
+            public void mouseEntered(MouseEvent e) 
+            {
                 okButton.setBackground(Color.BLACK);
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(MouseEvent e) 
+            {
                 okButton.setBackground(color);
             }
         });
+        
+        //When OK button is clicked, the dialog box closes:
         okButton.addActionListener(e -> dialog.dispose());
         
         JPanel buttonPanel = new JPanel();
@@ -609,14 +681,21 @@ public class FamilyFeud
         dialog.setLocationRelativeTo(frame);
         dialog.setVisible(true);
     }
-
-    private void handleAnswer(String answer, Team team) {
+    
+    //Checking if the answer was entered and passing the answer to check the answer:
+    private void handleAnswer(String answer, Team team) 
+    {
         boolean correct = false;
         int points = 0;
-        if (answer != null) {
+        if (answer != null) 
+        {
             String cleanAnswer = answer.toLowerCase().trim();
-            for (Answer a : questions.get(currentQuestionIndex).answers) {
-                if (a.text.toLowerCase().equals(cleanAnswer)) {
+            
+            //Traverse through the whole questions array:
+            for (Answer a : questions.get(currentQuestionIndex).answers) 
+            {
+                if (a.text.toLowerCase().equals(cleanAnswer)) 
+                {
                     correct = true;
                     points = a.points;
                     break;
@@ -627,48 +706,73 @@ public class FamilyFeud
         // Custom blue color
         Color customBlue = new Color(30, 144, 255);
 
-        if (correct) {
+        if (correct) 
+        {
             team.addScore(points);
-            // Correct message with green "CORRECT!", team name and points in black, rest in custom blue
+            
+            // Correct message with green "CORRECT!", team name and points in black, rest in custom blue:
             String correctMessage = "<html><center><font color='green'>CORRECT!</font><br>" +
                                     "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>" +
                                     "<font color='black'>" + team.getTeamName() + "</font> GAINS <font color='black'>" + points + "</font> POINTS!</font></center></html>";
             showCustomDialog(correctMessage, customBlue); // Custom blue theme
             currentQuestionIndex++;
             
-            if (currentRound >= maxRounds) {
+            if (currentRound >= maxRounds) 
+            {
+            	//End the game 5 rounds completed:
                 showGameOver();
-            } else {
+            } 
+            
+            else 
+            {
                 currentRound++;
                 showRoundScreen();
             }
-        } else {
+        } 
+        
+        else 
+        {
+        	//A strike on a wrong guess:
             strikes++;
-            if (strikes < 3) {
+            
+            if (strikes < 3) 
+            {
                 // Strike message with red "STRIKE X!", rest in custom blue
                 String strikeMessage = "<html><center><font color='red'>STRIKE " + strikes + 
                                        "!</font><br><font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>TRY AGAIN!</font></center></html>";
                 showCustomDialog(strikeMessage, Color.RED); // Red theme
                 createTeamInterface(team);
-            } else {
-                if (!stealPhase) {
+            } 
+            
+            else 
+            {
+                if (!stealPhase) 
+                {
                     stealPhase = true;
                     Team otherTeam = (team == teamA) ? teamB : teamA;
+                    
                     // 3 Strikes message with red "3 STRIKES!", team name in black, rest in custom blue
                     String threeStrikesMessage = "<html><center><font color='red'>3 STRIKES!</font><br>" +
                                                  "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>" +
                                                  "<font color='black'>" + otherTeam.getTeamName() + "</font> CAN STEAL!</font></center></html>";
                     showCustomDialog(threeStrikesMessage, customBlue); // Custom blue theme
                     createTeamInterface(otherTeam);
-                } else {
+                } 
+                
+                else 
+                {
                     // Steal failed message with red "STEAL FAILED!", rest in custom blue
                     String stealFailedMessage = "<html><center><font color='red'>STEAL FAILED!</font><br>" +
                                                 "<font color='" + String.format("#%02x%02x%02x", customBlue.getRed(), customBlue.getGreen(), customBlue.getBlue()) + "'>NO POINTS AWARDED!</font></center></html>";
                     showCustomDialog(stealFailedMessage, customBlue); // Custom blue theme
                     currentQuestionIndex++;
-                    if (currentRound >= maxRounds) {
+                    if (currentRound >= maxRounds) 
+                    {
                         showGameOver();
-                    } else {
+                    } 
+                    
+                    else 
+                    {
                         currentRound++;
                         showRoundScreen();
                     }
@@ -677,28 +781,34 @@ public class FamilyFeud
         }
     }
     
-    private void generateNewQuestion() {
-        if (currentQuestionIndex >= questions.size()) {
+    //Generate a new question:
+    private void generateNewQuestion() 
+    {
+        if (currentQuestionIndex >= questions.size()) 
+        {
             currentQuestionIndex = 0; // Reset or handle end of questions
         }
         currentQuestion = questions.get(currentQuestionIndex).text;
     }
-
-    private boolean isCorrectAnswer(String answer) {
+    
+    //Checking the answers:
+    private boolean isCorrectAnswer(String answer) 
+    {
         String cleanAnswer = answer.toLowerCase().trim();
         return questions.get(currentQuestionIndex).answers.contains(cleanAnswer);
     }
     
-    private void showGameOver() {
+    private void showGameOver() 
+    {
         JPanel gameOverPanel = new JPanel();
         gameOverPanel.setLayout(null);
         gameOverPanel.setBackground(Color.WHITE);
 
-        // Determine the winner and select appropriate meme
+        //Determine the winner and display a meme
         String imagePath = "/com/Project/Announce.png";
         String winningTeam = teamA.getTeamScore() > teamB.getTeamScore() ? "Team A!" : "Team B!";
         
-        // Winning Team Label
+        //Winning Team Label:
         JLabel winnerLabel = new JLabel(winningTeam);
         winnerLabel.setFont(customFont.deriveFont(30f));
         winnerLabel.setForeground(new Color(30, 144, 255));
@@ -706,14 +816,14 @@ public class FamilyFeud
         winnerLabel.setBounds(163, 31, 300, 40);
         gameOverPanel.add(winnerLabel);
 
-        // Load and display meme image
+        //Load and display meme image:
         ImageIcon memeIcon = new ImageIcon(getClass().getResource(imagePath));
         Image scaledMeme = memeIcon.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
         JLabel memeLabel = new JLabel(new ImageIcon(scaledMeme));
         memeLabel.setBounds(50, 50, 300, 200);
         gameOverPanel.add(memeLabel);
 
-        // Display final scores
+        // Display final scores:
         JLabel scoreLabel = new JLabel("<html><center>Team A: " + teamA.getTeamScore() 
             + "<br>Team B: " + teamB.getTeamScore() + "</center></html>");
         scoreLabel.setFont(customFont.deriveFont(25f));
@@ -722,15 +832,16 @@ public class FamilyFeud
         scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         gameOverPanel.add(scoreLabel);
 
-        // Play Again Button
+        //Play Again Button:
         JButton playAgainButton = new JButton("Play Again");
         playAgainButton.setFont(customFont.deriveFont(20f));
         playAgainButton.setBackground(new Color(30, 144, 255));
         playAgainButton.setForeground(Color.WHITE);
         playAgainButton.setFocusPainted(false);
         playAgainButton.setBounds(50, 370, 150, 40);
-        playAgainButton.addActionListener(e -> {
-            // Reset game state
+        playAgainButton.addActionListener(e -> 
+        {
+            //Reset game state:
             teamA = new Team("Team A");
             teamB = new Team("Team B");
             currentRound = 1;
@@ -739,7 +850,7 @@ public class FamilyFeud
         });
         gameOverPanel.add(playAgainButton);
 
-        // Exit Button
+        //Exit Button:
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(customFont.deriveFont(20f));
         exitButton.setBackground(Color.RED);
@@ -753,8 +864,8 @@ public class FamilyFeud
         frame.getContentPane().add(gameOverPanel);
         frame.validate();
     }
-
-
+    
+    //Main function:
     public static void main(String[] args) 
     {
         new FamilyFeud();

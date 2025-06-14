@@ -16,8 +16,3 @@ This game allows multiple players to guess top survey answers, just like the rea
 - Java Swing for UI
 - Eclipse as IDE
 
-## 🚀 How to Run
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/maryam-shahid166/Family-Feud.git
